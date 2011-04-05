@@ -1,0 +1,14 @@
+Password Bouncer v1
+
+Usage: java -jar PasswordBouncer.jar
+
+Need to have a password handy for scripts and can't keep it on the filesystem? 
+Enter your password, then background the process using whatever method your OS supports.
+To retrieve your password send "MYPASSWORD" to localhost port 10128.
+
+Usage in a bash script would be like this:
+
+MYPASSWORD=`exec 3<>/dev/tcp/localhost/10128 ; echo -e "MYPASSWORD\n">&3 ; cat <&3`
+
+then you can use the $MYPASSWORD variable when you need the password.
+
