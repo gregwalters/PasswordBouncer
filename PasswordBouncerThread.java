@@ -1,5 +1,5 @@
 /*
- *  IRC Plugin for Hyperic Written by Greg Walters
+ *  PasswordBouncer Written by Greg Walters
  *  Copyright (C) 2011, Contegix, LLC, www.contegix.com
  *
  *  This is free software; you can redistribute it and/or modify
