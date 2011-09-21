@@ -35,21 +35,28 @@ import java.io.*;
 public class PasswordBouncerThread extends Thread {
 	private Socket socket = null;
 	private String password = null;
+	private String queue = null;
+	private boolean verbose = false;
 
-	public PasswordBouncerThread(Socket socket, String password) {
+	public PasswordBouncerThread(Socket socket, String password, String queue, boolean verbose) {
 		super("PasswordBouncerThread");
 		this.socket = socket;
 		this.password = password;
+		this.queue = queue;
+		this.verbose = verbose;
 	}
 
 	public void run() {
 		try {
+			if (verbose) {
+				System.out.println("Connection from: " + socket.getRemoteSocketAddress().toString() );
+			}
 			PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 			BufferedReader in = new BufferedReader( new InputStreamReader(socket.getInputStream()));
 
 			String inputLine, outputLine;
 			while ((inputLine = in.readLine()) != null) {
-				if (inputLine.equals("MYPASSWORD"));{
+				if (inputLine.equals(queue)) {
 					outputLine = password;
 					out.println(outputLine);
 					break;

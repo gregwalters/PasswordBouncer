@@ -1,14 +1,38 @@
-Password Bouncer v1
+NAME
+	PasswordBouncer - Returns a password over TCP
 
-Usage: java -jar PasswordBouncer.jar
+SYNOPSIS
+	./PasswordBouncer.jar [-v] [-h] [-d defaults-file]
 
-Need to have a password handy for scripts and can't keep it on the filesystem? 
-Enter your password, then background the process using whatever method your OS supports.
-To retrieve your password send "MYPASSWORD" to localhost port 10128.
+DESCRIPTION
+	Need to have a password handy for scripts and can't keep it on the filesystem? 
+	Enter your password, then background the process using whatever method your OS supports.
+	To retrieve your password send "MYPASSWORD" to localhost port 10128 or any other address
+	specified via configuration file.
 
-Usage in a bash script would be like this:
+OPTIONS
+	-v 	Enables verbose output
 
-MYPASSWORD=`exec 3<>/dev/tcp/localhost/10128 ; echo -e "MYPASSWORD\n">&3 ; cat <&3`
+	-h	This help message
 
-then you can use the $MYPASSWORD variable when you need the password.
+	-p	Use an alternate properties file as the configuration source. Defaults to ~/.pb.properties or none.
 
+FILE
+	~/.pb.properties
+		This file need not exist for the default behavior of binding to 127.0.0.1:10128 and using "MYPASSWORD".
+		Expects options to be in the <key>=<value> format.
+
+		Sample config:
+
+			port=10128
+			address=127.0.0.1
+			string=MYPASSWORD
+
+BUGS
+	None found yet.
+
+WARRANTY
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+AUTHOR
+	Greg Walters <allrightname at gmail>

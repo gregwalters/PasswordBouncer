@@ -31,37 +31,60 @@
 
 import java.io.*; // for IOException, InputStreamReader, etc.
 import java.net.*; // for Socket, ServerSock
+import java.util.Properties;
 
 public class PasswordBouncer {
 	public static void main(String args[]) {
 		boolean listening = true;
 		ServerSocket serverSocket = null;
-		listen(listening);
+		ParseOptions options = new ParseOptions(args);
+		boolean verbose = options.getVerbose();
+		String properties_file = options.getDefaultFile();
+		Properties props = new Properties();
+		String file = options.getDefaultFile();
+		try { 
+			FileInputStream in = new FileInputStream(file);
+			props.load(in);
+			in.close();
+		} catch (IOException e) {
+			System.err.println("Could not load properties file " + file + ".");
+		}
+		String port = props.getProperty("port", "10128");
+		String address = props.getProperty("address", "127.0.0.1");
+		String queue = props.getProperty("string", "MYPASSWORD");
+		listen(listening, port, address, queue, verbose);
 	}
 
-	public static void listen(boolean listening) {
-		String password = getPass();
-		ServerSocket serverSocket = null;
+	public static void listen(boolean listening, String port, String address, String queue, boolean verbose) {
+		String password = PasswordField.readPassword("Enter your password: ");
 		try {
-			serverSocket = new ServerSocket(10128);
-		} catch (IOException e) {
-			System.err.println("Couldn't listen on port 10128.");
+			InetAddress inet = InetAddress.getByName(address);
+			Integer iport = Integer.parseInt(port);
+			Integer blog = 10;
+			ServerSocket serverSocket = null;
+				try {
+					serverSocket = new ServerSocket(iport, blog, inet);
+                			while (listening) {
+			                        try {
+			                                new PasswordBouncerThread(serverSocket.accept(), password, queue, verbose).run();
+			                        } catch (IOException e) {
+			                                e.printStackTrace();
+			                        }
+			                }
+
+		                try {
+		                        serverSocket.close();
+		                } catch (IOException e) {
+		                        e.printStackTrace();
+		                }
+				} catch (IOException e) {
+					System.err.println("Couldn't bind on " + address + ":" + port);
+					System.exit(1);
+				}
+		} catch(UnknownHostException e) {
+			e.printStackTrace();
 			System.exit(1);
 		}
-
-                while (listening) {
-                        try {
-                                new PasswordBouncerThread(serverSocket.accept(), password).run();
-                        } catch (IOException e) {
-                                e.printStackTrace();
-                        }
-                }
-
-                try {
-                        serverSocket.close();
-                } catch (IOException e) {
-                        e.printStackTrace();
-                }
 	
 	}
 
